@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { api } from '../services/api';
+import { api, disableMockMode } from '../services/api';
 
 export interface User {
   id: string;
@@ -131,6 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('selectedCanteenId');
+    disableMockMode();
     setToken(null);
     setUser(null);
     setSelectedCanteenId('ALL');

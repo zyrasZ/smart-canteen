@@ -10,9 +10,37 @@ export const api = axios.create({
   },
 });
 
-if (import.meta.env.VITE_USE_MOCK === 'true') {
-  setupMockAdapter(api);
-  console.info('[Smart Canteen] Đang chạy chế độ Mock Data (VITE_USE_MOCK=true)');
+const defaultAdapter = api.defaults.adapter;
+let isMockAdapterAttached = false;
+
+export const isMockModeEnabled = (): boolean =>
+  import.meta.env.VITE_USE_MOCK === 'true' ||
+  (typeof window !== 'undefined' && localStorage.getItem('use_mock_mode') === 'true');
+
+export function enableMockMode(): void {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('use_mock_mode', 'true');
+  }
+  if (!isMockAdapterAttached) {
+    setupMockAdapter(api);
+    isMockAdapterAttached = true;
+    console.info('[Smart Canteen] Đang chạy chế độ Mock Data');
+  }
+}
+
+export function disableMockMode(): void {
+  if (import.meta.env.VITE_USE_MOCK === 'true') return;
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('use_mock_mode');
+  }
+  if (isMockAdapterAttached) {
+    api.defaults.adapter = defaultAdapter;
+    isMockAdapterAttached = false;
+  }
+}
+
+if (isMockModeEnabled()) {
+  enableMockMode();
 }
 
 api.interceptors.request.use((config) => {

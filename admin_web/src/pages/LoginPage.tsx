@@ -7,10 +7,9 @@ import {
   EyeIcon as Eye,
   EyeSlashIcon as EyeOff,
   CrownIcon as Crown,
-  BuildingsIcon as Building2,
 } from '@phosphor-icons/react';
 import { useAuth } from '../context/AuthContext';
-import { api } from '../services/api';
+import { api, enableMockMode } from '../services/api';
 import logoImg from '../assets/logo.png';
 
 const GoogleIcon: FC = () => (
@@ -86,10 +85,12 @@ export const LoginPage: FC = () => {
     const params = new URLSearchParams(window.location.search);
     const demoRole = params.get('demo');
     if (demoRole === 'admin') {
+      enableMockMode();
       setEmail('admin@smartcanteen.vn');
       setPassword('123456');
       performLogin('admin@smartcanteen.vn', '123456');
     } else if (demoRole === 'staff') {
+      enableMockMode();
       setEmail('admin.cs1@smartcanteen.vn');
       setPassword('123456');
       performLogin('admin.cs1@smartcanteen.vn', '123456');
@@ -101,13 +102,12 @@ export const LoginPage: FC = () => {
     await performLogin(email, password);
   };
 
-  const handleQuickLogin = async (quickEmail: string) => {
-    setEmail(quickEmail);
+  const handleMockDemoLogin = async () => {
+    enableMockMode();
+    setEmail('admin@smartcanteen.vn');
     setPassword('123456');
-    await performLogin(quickEmail, '123456');
+    await performLogin('admin@smartcanteen.vn', '123456');
   };
-
-  const showDemoBar = import.meta.env.VITE_USE_MOCK === 'true' || import.meta.env.DEV;
 
   return (
     <div className="min-h-screen min-h-dvh w-full relative overflow-x-hidden overflow-y-auto flex items-center justify-center px-4 py-6 sm:px-6 sm:py-10 font-sans antialiased bg-gradient-to-br from-[#eef5ff] via-[#f8fbff] to-[#d9ecff] selection:bg-blue-100 selection:text-[#0062ff]">
@@ -308,34 +308,21 @@ export const LoginPage: FC = () => {
               </button>
             </p>
 
-            {/* Quick Demo Login (Dev / Mock Mode only) */}
-            {showDemoBar && (
-              <div className="mt-5 pt-4 border-t border-slate-100">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 text-center mb-2">
-                  Quick Demo Login
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    disabled={isLoading}
-                    onClick={() => handleQuickLogin('admin@smartcanteen.vn')}
-                    className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-blue-50 hover:border-blue-200 text-[11px] font-semibold text-slate-700 hover:text-[#0062ff] transition-colors cursor-pointer disabled:opacity-60"
-                  >
-                    <Crown className="size-3.5 shrink-0" />
-                    <span>Super Admin</span>
-                  </button>
-                  <button
-                    type="button"
-                    disabled={isLoading}
-                    onClick={() => handleQuickLogin('admin.cs1@smartcanteen.vn')}
-                    className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-blue-50 hover:border-blue-200 text-[11px] font-semibold text-slate-700 hover:text-[#0062ff] transition-colors cursor-pointer disabled:opacity-60"
-                  >
-                    <Building2 className="size-3.5 shrink-0" />
-                    <span>Admin CS1</span>
-                  </button>
-                </div>
-              </div>
-            )}
+            {/* 1-Click Mock Data Demo Login (always available for product showcase) */}
+            <div className="mt-5 pt-4 border-t border-slate-100">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 text-center mb-2">
+                Dành cho trải nghiệm &amp; nhà tuyển dụng
+              </p>
+              <button
+                type="button"
+                disabled={isLoading}
+                onClick={handleMockDemoLogin}
+                className="w-full h-10.5 rounded-xl border border-blue-200 bg-blue-50/70 hover:bg-blue-100/80 active:bg-blue-100 text-xs font-semibold text-[#0057b8] flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <Crown className="size-4 shrink-0" />
+                <span>Đăng nhập Demo (Mock Data)</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
