@@ -51,6 +51,18 @@ export const LoginPage: FC = () => {
     try {
       const cleanEmail = String(loginEmail || '').trim().toLowerCase();
       const cleanPass = String(loginPass || '').trim();
+      const demoEmails = [
+        'admin@smartcanteen.vn',
+        'admin.cs1@smartcanteen.vn',
+        'admin.cs2@smartcanteen.vn',
+      ];
+      if (
+        !import.meta.env.VITE_API_BASE_URL &&
+        import.meta.env.VITE_USE_MOCK !== 'false' &&
+        demoEmails.includes(cleanEmail)
+      ) {
+        enableMockMode();
+      }
       const res = await api.post('/auth/login', { email: cleanEmail, password: cleanPass });
       const { token, user } = res.data;
 
@@ -172,9 +184,25 @@ export const LoginPage: FC = () => {
         {/* Right Login Card */}
         <div className="w-full max-w-[400px] shrink-0">
           <div className="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-[22px] border border-white shadow-[0_24px_60px_-15px_rgba(0,85,184,0.18)] p-5 sm:p-8">
-            <h1 className="text-2xl sm:text-[26px] font-bold text-[#0f172a] tracking-tight mb-5 sm:mb-6">
+            <h1 className="text-2xl sm:text-[26px] font-bold text-[#0f172a] tracking-tight mb-4">
               Login
             </h1>
+
+            {/* 1-Click Recruiter Demo Box (always visible for showcase) */}
+            <div className="mb-5 p-3 rounded-xl bg-blue-50/80 border border-blue-200/80 space-y-2">
+              <button
+                type="button"
+                disabled={isLoading}
+                onClick={handleMockDemoLogin}
+                className="w-full h-10 rounded-lg bg-[#0057b8] hover:bg-[#004593] active:bg-[#003e82] text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <Crown className="size-4 shrink-0" />
+                <span>Vào xem Demo ngay (Không cần tài khoản)</span>
+              </button>
+              <p className="text-[11px] text-slate-600 text-center leading-snug">
+                Hoặc nhập tài khoản test: <code className="font-semibold text-[#0057b8]">admin@smartcanteen.vn</code> / <code className="font-semibold text-[#0057b8]">123456</code>
+              </p>
+            </div>
 
             {/* Google Sign-in */}
             <button
@@ -307,22 +335,6 @@ export const LoginPage: FC = () => {
                 Register
               </button>
             </p>
-
-            {/* 1-Click Mock Data Demo Login (always available for product showcase) */}
-            <div className="mt-5 pt-4 border-t border-slate-100">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 text-center mb-2">
-                Dành cho trải nghiệm &amp; nhà tuyển dụng
-              </p>
-              <button
-                type="button"
-                disabled={isLoading}
-                onClick={handleMockDemoLogin}
-                className="w-full h-10.5 rounded-xl border border-blue-200 bg-blue-50/70 hover:bg-blue-100/80 active:bg-blue-100 text-xs font-semibold text-[#0057b8] flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                <Crown className="size-4 shrink-0" />
-                <span>Đăng nhập Demo (Mock Data)</span>
-              </button>
-            </div>
           </div>
         </div>
       </div>
